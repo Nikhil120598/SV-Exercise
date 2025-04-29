@@ -1,0 +1,43 @@
+module array;
+    int data_da[];
+    int data_q[$], addr_q[$];
+    int data_mem[bit[7:0]];
+    int result;
+
+    initial begin
+        data_da = new[10];
+        foreach (data_da[i])
+            data_da[i] = ($random) % 20;
+       
+        // Display the values of data_da
+        $display("Values in data_da:");
+        foreach (data_da[i])
+            $display("data_da[%0d] = %0d", i, data_da[i]);
+
+/*
+        data_da = new[10];
+        foreach (data_da[i]) begin
+            int rand_val = ($random) % 20;
+            data_da[i] = (rand_val >= 0) ? rand_val : -rand_val;
+        end
+*/
+
+        // Display the values of data_da
+        $display("Values in data_da:");
+        foreach (data_da[i])
+            $display("data_da[%0d] = %0d", i, data_da[i]);
+
+        // Calculate and display the sum of all values
+        result = data_da.sum();
+        $display("Sum of all values: %0d", result);
+
+        // Calculate and display the sum of values greater than 7
+        result = data_da.sum with (item > 7 ? item : 0);
+        $display("Sum of values greater than 7: %0d", result);
+    end
+
+    /* initial begin 
+       $dumpvars(0, array);
+       $dumpfile("mydump.vcd");
+    end */
+endmodule
