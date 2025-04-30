@@ -1,0 +1,45 @@
+module test_inheritance;
+ 
+ class account_base;
+  
+  int balance = 2000;
+
+  function int summary_base();
+   return balance;
+  endfunction : summary_base
+ 
+  task deposit (input int pay);
+    balance = balance + pay;
+  endtask :deposit
+
+ endclass : account_base
+
+ class account_extd extends account_base;
+
+  int balance = 3000;
+  
+  function int summary_extd();
+   balance = super.balance + balance;
+   return balance;
+  endfunction : summary_extd;
+
+ endclass : account_extd
+
+ account_extd acc_h;
+
+  initial 
+    begin
+         
+         acc_h = new;
+         
+         $display("Before Calling a function Deposit - Balance in base class %d",acc_h.summary_base);
+         $display("Before Calling a function Deposit - Balance in extended class %d",acc_h.summary_extd);
+
+         acc_h.deposit(5000);
+         $display("Balance in base class %d",acc_h.summary_base);
+         $display("Balance in extended class %d",acc_h.summary_extd);
+         
+
+    end
+
+endmodule
