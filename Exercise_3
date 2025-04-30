@@ -1,0 +1,32 @@
+class account_c;
+
+int balance;
+
+function int summary;
+ return balance;
+endfunction
+
+task deposit(input int pay);
+    balance = balance + pay;
+endtask 
+
+endclass : account_c
+
+module test;
+
+initial begin 
+ account_c acnt;
+
+ acnt =new;
+
+ acnt.deposit(100);
+
+ $display("Summary : %d",acnt.summary);
+ $display("Balance : %d",acnt.balance);
+
+ acnt.deposit(100);
+
+ $display("Summary : %d",acnt.summary);
+ $display("Balance : %d",acnt.balance);
+end
+endmodule
