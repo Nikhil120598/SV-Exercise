@@ -1,0 +1,104 @@
+module test_mailbox;
+ 
+ class packet;
+  rand bit [3:0] addr;
+  rand bit [3:0] data;
+ 
+
+ function void display(input string message, input int iter);
+  $display("-----------------------------------------");
+  $display("\t%s - Iteration :%0d",message ,iter);
+  $display("\tData = %0d , Address =%0d",data,addr);
+  $display("-----------------------------------------");
+ endfunction :display
+
+ function void post_randomize();
+  this.display("RANDOMIZE DATA",-1);
+ endfunction : post_randomize
+
+ endclass
+
+
+// Generator
+class generator;
+ 
+ packet gen_pkt;
+ mailbox #(packet) gen2drv;
+ int gen_iter;
+
+ function new(mailbox #(packet) gen2drv);
+  this.gen2drv = gen2drv;
+  this.gen_iter=0;
+endfunction : new
+
+ task start();
+     fork
+         repeat(10)
+                  begin
+                       gen_pkt = new;
+                       assert(gen_pkt.randomize());
+                       gen2drv.put(gen_pkt);
+                       gen_pkt.display("GENERATED PACKET",gen_iter);
+                       gen_iter++;
+                  end
+    join
+ endtask : start
+
+endclass
+
+// Driver
+
+ class driver;
+ 
+ packet drv_pkt;
+ mailbox #(packet) drv4gen;
+ int drv_iter;
+
+ function new(mailbox #(packet) drv4gen);
+  this.drv4gen = drv4gen;
+  this.drv_iter=0;
+endfunction : new
+
+ task start();
+     fork
+         repeat(10)
+                  begin
+                       drv4gen.get(drv_pkt);
+                       drv_pkt.display("DATA IN DRIVER", drv_iter); 
+                       drv_iter++; 
+                  end
+    join
+ endtask : start
+endclass : driver
+
+// ENVIORNMENT
+
+class env;
+
+ mailbox #(packet) gen_drv = new;
+ 
+ driver drv;
+ generator gen;
+
+ task build();
+      gen = new(gen_drv);
+      drv = new(gen_drv);
+ endtask
+ 
+ task start();
+      gen.start();
+      #1;
+      drv.start();
+ endtask : start
+
+endclass :env 
+ 
+ initial
+       begin
+            env env_h=new;
+            env_h.build();
+            env_h.start();
+       end
+
+
+endmodule
