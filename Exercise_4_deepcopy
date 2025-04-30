@@ -1,0 +1,64 @@
+module test_deepcopy;
+ 
+class parity_class;
+ bit [7:0] parity = 30;
+
+ function parity_class copy();
+
+  copy =new;
+  copy.parity = this.parity;
+
+ endfunction:copy
+
+endclass:parity_class
+
+class packet;
+ 
+ bit [7:0] header = 20;
+ bit [7:0] data = 30;
+
+ parity_class par_h = new;
+
+ function packet copy();
+  
+  copy =new;
+  
+  copy.header = this.header;
+  copy.data = this.data;
+  copy.par_h = this.par_h.copy();
+ 
+ endfunction:copy
+
+endclass:packet
+
+packet pkt1;
+packet pkt2;
+
+initial begin
+            pkt1 = new;
+            pkt2 = new pkt1;
+
+            
+            $display("1. Shallow copy: pkt1 = %p, pkt2 = %p", pkt1, pkt2);
+            $display("2. pkt1: header = %d, data = %d, parity = %d", pkt1.header, pkt1.data, pkt1.par_h.parity);
+            $display("3. pkt2: header = %d, data = %d, parity = %d", pkt2.header, pkt2.data, pkt2.par_h.parity);
+        
+            pkt2.par_h.parity = 19;
+             
+            $display("1. Shallow copy: pkt1 = %p, pkt2 = %p", pkt1, pkt2);
+            $display("2. pkt1: header = %d, data = %d, parity = %d", pkt1.header, pkt1.data, pkt1.par_h.parity);
+            $display("3. pkt2: header = %d, data = %d, parity = %d", pkt2.header, pkt2.data, pkt2.par_h.parity);
+
+            pkt2 = pkt1.copy();
+            $display("1. Deep copy: pkt1 = %p, pkt2 = %p", pkt1, pkt2);
+            $display("2. pkt1: header = %d, data = %d, parity = %d", pkt1.header, pkt1.data, pkt1.par_h.parity);
+            $display("3. pkt2: header = %d, data = %d, parity = %d", pkt2.header, pkt2.data, pkt2.par_h.parity);
+            
+            pkt2.par_h.parity = 11;
+             
+            $display("1. Deep_copy: pkt1 = %p, pkt2 = %p", pkt1, pkt2);
+            $display("2. pkt1: header = %d, data = %d, parity = %d", pkt1.header, pkt1.data, pkt1.par_h.parity);
+            $display("3. pkt2: header = %d, data = %d, parity = %d", pkt2.header, pkt2.data, pkt2.par_h.parity);
+
+        end
+endmodule
