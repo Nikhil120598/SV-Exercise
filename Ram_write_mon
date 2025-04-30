@@ -1,0 +1,36 @@
+class ram_write_mon;
+ 
+ virtual ram_if.WR_MON wrmon_if;
+
+ ram_trans data2rm;
+
+ mailbox #(ram_trans) mon2rm;
+
+ function new(virtual ram_if.WR_MON wrmon_if,mailbox #(ram_trans) mon2rm);
+  this.wrmon_if=wrmon_if;
+  this.monn2rm=mon2rm;
+  this.data2rm=new;
+ endfunction: new
+
+ task monitor();
+  @(wr_if.wr_mon_cb)
+  wait(wrmon_if.wr_mon_cb.write==1)
+  @(wrmon_if.wr_mon_cb);
+  begin
+       data2rm.write=wrmon_if.wr_mon_cb.write;
+       data2rm.wr_address=wrmon_if.wr_mon_cb.wr_address;
+       data2rm.data=wrmon_if.wr_mon_cb.data_in;
+       data2rm.display("DATA FROM WRITE MONITOR");
+  end
+ endtask : drive
+
+ task start();
+  fork
+      forever
+      begin
+           monitor;
+           mon2rm.put(data2rm);
+      end
+  join_none
+ endtask : start
+endclass:ram_write_mon
