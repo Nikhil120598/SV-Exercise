@@ -1,0 +1,46 @@
+module test_random;
+ 
+  class alu_trans;
+   
+   typedef enum {LOGIC,ARITH,SHIFT} OPERATION;
+
+   rand logic [3:0] alu_sel;
+   rand OPERATION rand_oper;
+   int inter;
+
+   constraint SEL {rand_oper==LOGIC -> alu_sel inside {[0:5]};
+                   rand_oper==ARITH -> alu_sel inside {[6:9]};
+                   rand_oper==SHIFT -> alu_sel inside {[6:9]};
+   }
+  
+    constraint OPER {rand_oper dist{LOGIC :=1,ARITH :=2, SHIFT :=1};}
+
+  function void post_randomize;
+    $display("Iteration : %0d , The post randomize data is %0s , %0d ",inter, rand_oper.name() , alu_sel);
+  endfunction : post_randomize
+
+  function void pre_randomize;
+    $display("Iteration : %0d ,The pre randomize data is %0s , %0d ",inter, rand_oper.name() , alu_sel);
+  endfunction : pre_randomize
+
+ endclass : alu_trans
+
+ initial 
+  begin
+   alu_trans trans = new;
+   int i;
+   
+
+   for ( i=0;i <= 12;i++)
+     begin
+     trans.inter =i;
+     
+     
+     assert(trans.randomize());
+     
+     
+     
+    end
+  end
+
+endmodule
