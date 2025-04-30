@@ -1,0 +1,50 @@
+interface ram_if(input bit clock);
+
+  logic [63:0] data_in;
+  logic [63:0] data_out;
+  logic [63:0] rd_address;
+  logic [63:0] wr_address;
+  logic read;
+  logic write;
+
+  // WRITER DRIVER CLOCKING BLOCK
+  clocking wr_drv_cb @(posedge clock);
+    default input #1 output #1;
+    output wr_address;
+    output data_in;
+    output write;
+  endclocking
+
+  // READ DRIVING CLOCKING BLOCK
+  clocking rd_drv_cb @(posedge clock);
+    default input #1 output #1;
+    output rd_address;
+    output read;
+  endclocking : rd_drv_cb
+
+  // WRITE MONITOR CLOCKING BLOCK
+  clocking wr_mon_cb @(posedge clock);
+    default input #1 output #1;
+    input wr_address;
+    input data_in;
+    input write;
+  endclocking : wr_mon_cb
+
+  // READ MONITOR CLOCKING BLOCK
+  clocking rd_mon_cb @(posedge clock);
+    default input #1 output #1;
+    input rd_address;
+    input data_out;
+    input read;
+  endclocking
+
+  // WRITE DRIVER MODPORT
+  modport WR_DRV(clocking wr_drv_cb);
+
+  // READ DRIVER MODPORT
+  modport RD_DRV(clocking rd_drv_cb);
+
+  // WRITE MONITOR MODPORT
+  modport WR_MON(clocking wr_mon_cb);
+
+endinterface : ram_if
