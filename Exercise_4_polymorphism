@@ -1,0 +1,29 @@
+module test_polymorphism;
+ 
+ class packet;
+  virtual task send();
+    $display("Send is called from an object of : %s class , and it is sending base class packet ",$typename(this));
+  endtask
+ endclass : packet 
+
+ class badpacket extend packet; 
+  task send();
+    $display("Send is called from an object of : %s class , and it is sending derieved class packet ",$typename(this));
+  endtask
+ endclass : badpacket
+
+ initial begin
+  packet pkt = new;
+  badpacket bad = new;
+
+  pkt.send();
+  bad.send();
+
+  pkt = bad;
+
+  pkt.send();
+  bad.send();
+ end
+
+endmodule
+
