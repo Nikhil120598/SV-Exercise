@@ -1,0 +1,23 @@
+module top;
+
+  // Declare a mailbox for communication
+  mailbox #(ram_trans) gen2drv;
+
+  // Instantiate the ram_gen class
+  ram_gen gen_inst;
+
+  initial begin
+    // Create the mailbox
+    gen2drv = new;
+
+    // Instantiate the ram_gen object
+    gen_inst = new(gen2drv);
+
+    // Start the generator
+    gen_inst.start();
+
+    // Run the simulation for a certain amount of time
+    #1000 $finish;
+  end
+
+endmodule
