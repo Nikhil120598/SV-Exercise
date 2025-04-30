@@ -1,0 +1,31 @@
+module test_semaphore;
+ class driver;
+  task send(input string var1, input time t);
+   sem.get(1);
+   $display("%s GOT KEY at time : %0t",var1,t);
+   #5;
+   sem.put(1);
+    $display("%s DROPPED KEY at time : %0t ",var1,t);
+  endtask : send
+ endclass : driver
+
+ driver drv[2];
+ semaphore sem;
+
+ initial 
+    begin
+        drv[0]=new();
+        drv[1]=new();
+
+        sem=new(1);
+
+        repeat(5)
+             begin
+                 fork
+                    drv[0].send("Driver--1",$time);
+                    #1;
+                    drv[1].send("Driver--2",$time);
+                 join
+             end
+    end
+endmodule
